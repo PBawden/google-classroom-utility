@@ -1,0 +1,27 @@
+{
+  "name": "google-classroom-utility",
+  "version": "0.1.0",
+  "description": "A tiny utility to help manage Google Classroom grades.",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wesbasinger/google-classroom-utility.git"
+  },
+  "keywords": [
+    "education",
+    "Google",
+    "grading"
+  ],
+  "author": "Wes Basinger",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wesbasinger/google-classroom-utility/issues"
+  },
+  "homepage": "https://github.com/wesbasinger/google-classroom-utility#readme",
+  "dependencies": {
+    "superagent": "^2.1.0"
+  }
+}
