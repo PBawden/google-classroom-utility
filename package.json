@@ -5,8 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "mocha",
-	"prestart": "jshint app.js",
-	"start": "node app.js"
+    "prestart": "jshint app.js ./db/updateStudents.js",
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/wesbasinger/google-classroom-utility#readme",
   "dependencies": {
+    "mongodb": "^2.2.5",
     "readline-sync": "^1.4.4",
     "superagent": "^2.1.0"
   }
