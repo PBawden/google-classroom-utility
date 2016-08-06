@@ -4,7 +4,9 @@
   "description": "A tiny utility to help manage Google Classroom grades.",
   "main": "app.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+	"prestart": "jshint app.js",
+	"start": "node app.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +24,7 @@
   },
   "homepage": "https://github.com/wesbasinger/google-classroom-utility#readme",
   "dependencies": {
+    "readline-sync": "^1.4.4",
     "superagent": "^2.1.0"
   }
 }
