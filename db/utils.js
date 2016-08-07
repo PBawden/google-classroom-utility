@@ -44,5 +44,21 @@ module.exports = {
           callback(newStudents);
         }
       })
+  },
+  insertNewStudents: function(newStudents, collection, callback) {
+    MongoClient.connect(config.uri, function(err, db) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Connected...");
+        db.collection(collection).insertMany(newStudents, function(err, result) {
+          if (err) {
+            console.log(err);
+          } else {
+            callback();
+          }
+        })
+      }
+    })
   }
 }
