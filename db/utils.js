@@ -81,6 +81,23 @@ module.exports = {
         );
       }
     });
+  },
+  assignmentUpdate: function(updateWork, collection, callback) {
+    MongoClient.connect(config.uri, function(err, db) {
+      if (err) {
+        console.log(err);
+      } else {
+        db.collection(collection).update(
+          {userId: updateWork.userId, work: {courseWorkId: updateWork.courseWorkId}},
+          {$set: {"work.$.assignedGrade" : updateWork.assignedGrade}}, function(err) {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log("Success!");
+          }
+        });
+      }
+    });
   }
 
 };

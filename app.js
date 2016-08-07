@@ -22,7 +22,7 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
     });
     var index = readlineSync.keyInSelect(names, "Which class?");
     var selected = classList[index];
-    var mainMenu = ['Update Student List', 'Initial Assignment Upload'];
+    var mainMenu = ['Update Student List', 'Initial Assignment Upload', 'Update Existing Assignment'];
     var main = readlineSync.keyInSelect(mainMenu, 'Which action would you like to take?');
     /* selection 0 is Update Student List */
     if (main === 0) {
@@ -78,6 +78,39 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
                     console.log(err);
                   } else {
                     console.log("Inserted grade for " + submission.userId);
+                  }
+                });
+              });
+            }
+          });
+        }
+      });
+    } else if (main === 2) {
+      console.log("Getting student data...");
+      request.get(url + "?method=getAssignments&courseId=" + selected.id).end(function(err, res) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Success...");
+          var assignments = res.body;
+          var assignmentNames = [];
+          assignments.forEach(function(assignment) {
+            assignmentNames.push(assignment.title);
+          });
+          var index = readlineSync.keyInSelect(assignmentNames, "Which assignment would you like to download?");
+          var download = assignments[index];
+          console.log("Getting submissions...");
+          request.get(url + "?method=getSubmissions&courseId=" + selected.id + "&courseWorkId=" + download.id).end(function(err, res) {
+            if (err) {
+              console.log(err);
+            } else {
+              var submissions = res.body;
+              submissions.forEach(function(submission) {
+                utils.assignmentUpdate(submission, 'algebra2', function(err) {
+                  if (err) {
+                    console.log(err);
+                  } else {
+                    console.log("Updated grade for " + submission.userId);
                   }
                 });
               });
