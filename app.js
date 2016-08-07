@@ -1,13 +1,19 @@
 var request = require('superagent');
 var utils = require('./db/utils');
 var readlineSync = require('readline-sync');
+var urlencode = require('urlencode');
 
 var url = "https://script.google.com/macros/s/AKfycbzGmvkUXGTvNK0ChTl9EMk9BenhwbtLHrjRjbaPauIW5CNblb0/exec";
 console.log("Loading class lists...");
 // kick off the fun by getting a class list
-request.get(url + "?method=getClasses").end(function(err, res) {
+// choke off most of the object
+var partial = urlencode("fields=courseState,name,id");
+request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
   if (err) {
-    console.log(err);
+    if (err.code == 'EAI_AGAIN') {
+      console.log("Google server error.  Try again.");
+      process.exit();
+    }
   } else {
     var classList = res.body;
     var names = [];
@@ -21,12 +27,26 @@ request.get(url + "?method=getClasses").end(function(err, res) {
     /* selection 0 is Update Student List */
     if (main === 0) {
       console.log("Getting student data, may take awhile...");
-      request.get(url + "?method=getStudents&courseId=" + selected.id).end(function(err, res) {
+      // choke student object
+      var partial = urlencode("fields=profile, userId");
+      request.get(url + "?method=getStudents&courseId=" + selected.id + "&" + partial).end(function(err, res) {
         if (err) {
-          console.log(err);
+          if (err.code == 'EAI_AGAIN') {
+            console.log("Google server error.  Try again.");
+            process.exit();
+          }
         } else {
           var students = res.body;
-          utils.findNewStudents('algebra2', students);
+          utils.findNewStudents('algebra2', students, function(arr) {
+            if(arr.length>0) {
+              // do something to insert new students
+              console.log("YOU NEVER FINISHED THIS!!!")
+              process.exit();
+            } else {
+              console.log("Student list is up to date!");
+              process.exit();
+            }
+          });
         }
       });
     }
