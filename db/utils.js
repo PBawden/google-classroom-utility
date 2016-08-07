@@ -23,9 +23,9 @@ module.exports = {
         if (!results) {
           studentArray.forEach(function(student) {
             var copy = Object.assign({}, student);
-            copy.work = {}
+            copy.work = {};
             newStudents.push(copy);
-          })
+          });
           callback(newStudents);
         } else {
           for (var i=0; i<studentArray.length; i++) {
@@ -43,7 +43,7 @@ module.exports = {
           }
           callback(newStudents);
         }
-      })
+      });
   },
   insertNewStudents: function(newStudents, collection, callback) {
     MongoClient.connect(config.uri, function(err, db) {
@@ -57,8 +57,8 @@ module.exports = {
           } else {
             callback();
           }
-        })
+        });
       }
-    })
+    });
   }
-}
+};
