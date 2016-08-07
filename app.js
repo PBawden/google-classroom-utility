@@ -22,7 +22,7 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
     });
     var index = readlineSync.keyInSelect(names, "Which class?");
     var selected = classList[index];
-    var mainMenu = ['Update Student List', 'Upload Assignment'];
+    var mainMenu = ['Update Student List', 'Initial Assignment Upload'];
     var main = readlineSync.keyInSelect(mainMenu, 'Which action would you like to take?');
     /* selection 0 is Update Student List */
     if (main === 0) {
@@ -40,8 +40,10 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
           utils.findNewStudents('algebra2', students, function(arr) {
             if(arr.length>0) {
               // do something to insert new students
-              console.log("YOU NEVER FINISHED THIS!!!");
-              process.exit();
+              utils.insertNewStudents(arr, 'algebra2', function() {
+                console.log("Successfully inserted " + arr.length + " new students.");
+                process.exit();
+              });
             } else {
               console.log("Student list is up to date!");
               process.exit();
@@ -50,10 +52,12 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
         }
       });
     } else if (main === 1) {
+      console.log("Getting student data...");
       request.get(url + "?method=getAssignments&courseId=" + selected.id).end(function(err, res) {
         if (err) {
           console.log(err);
         } else {
+          console.log("Success...");
           var assignments = res.body;
           var assignmentNames = [];
           assignments.forEach(function(assignment) {
@@ -61,12 +65,22 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
           });
           var index = readlineSync.keyInSelect(assignmentNames, "Which assignment would you like to download?");
           var download = assignments[index];
-          console.log(download.id);
+          console.log("Getting submissions...");
           request.get(url + "?method=getSubmissions&courseId=" + selected.id + "&courseWorkId=" + download.id).end(function(err, res) {
             if (err) {
               console.log(err);
             } else {
-              console.log(res.body);
+              var submissions = res.body;
+              var tek = readlineSync.question("Which TEK should this be coded as?");
+              submissions.forEach(function(submission) {
+                utils.initialUpload(submission, tek, 'algebra2', function(err) {
+                  if (err) {
+                    console.log(err);
+                  } else {
+                    console.log("Inserted grade for " + submission.userId);
+                  }
+                });
+              });
             }
           });
         }

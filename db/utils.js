@@ -37,7 +37,7 @@ module.exports = {
             }
             if (!found) {
               var copy = Object.assign({}, studentArray[i]);
-              copy.work = {};
+              copy.work = [];
               newStudents.push(copy);
             }
           }
@@ -60,5 +60,27 @@ module.exports = {
         });
       }
     });
+  },
+  initialUpload: function(newWork, tek,collection, callback) {
+    MongoClient.connect(config.uri, function(err, db) {
+      if (err) {
+        console.log(err);
+      } else {
+        var copy = Object.assign({}, newWork);
+        copy.tek = tek;
+        db.collection(collection).update(
+          {userId: copy.userId},
+          {$addToSet: {work: copy}},
+          function(err) {
+            if (err) {
+              console.log(err);
+            } else {
+              callback();
+            }
+          }
+        );
+      }
+    });
   }
+
 };
