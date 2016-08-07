@@ -61,13 +61,14 @@ module.exports = {
       }
     });
   },
-  initialUpload: function(newWork, tek,collection, callback) {
+  initialUpload: function(newWork, tek, title, collection, callback) {
     MongoClient.connect(config.uri, function(err, db) {
       if (err) {
         console.log(err);
       } else {
         var copy = Object.assign({}, newWork);
         copy.tek = tek;
+        copy.title = title;
         db.collection(collection).update(
           {userId: copy.userId},
           {$addToSet: {work: copy}},

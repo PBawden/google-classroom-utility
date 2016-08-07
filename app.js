@@ -73,7 +73,7 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
               var submissions = res.body;
               var tek = readlineSync.question("Which TEK should this be coded as?");
               submissions.forEach(function(submission) {
-                utils.initialUpload(submission, tek, 'algebra2', function(err) {
+                utils.initialUpload(submission, tek, download.title, 'algebra2', function(err) {
                   if (err) {
                     console.log(err);
                   } else {
