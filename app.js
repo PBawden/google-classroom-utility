@@ -1,5 +1,5 @@
 var request = require('superagent');
-var findNewStudents = require('./db/findNewStudents');
+var utils = require('./db/utils');
 var readlineSync = require('readline-sync');
 
 var url = "https://script.google.com/macros/s/AKfycbzGmvkUXGTvNK0ChTl9EMk9BenhwbtLHrjRjbaPauIW5CNblb0/exec";
@@ -26,35 +26,9 @@ request.get(url + "?method=getClasses").end(function(err, res) {
           console.log(err);
         } else {
           var students = res.body;
-          findNewStudents(students, function(newStudents) {
-            console.log(newStudents);
-          })
+          utils.findNewStudents('algebra2', students);
         }
       });
     }
-    // async.parallel([
-    //   function(callback) {
-
-    //   },
-    //   function(callback) {
-    //     request.get(url + "?method=getAssignments&courseId=" + selected.id).end(function(err, res) {
-    //       if (err) {
-    //         console.log(err);
-    //       } else {
-    //         console.log("Got assignment data...");
-    //         var assignments = res.body;
-    //         callback(null, assignments);
-    //       }
-    //     });
-    //   }
-    // ], function(err, results) {
-    //   var assignmentList = results[1];
-    //   var names = [];
-    //   assignmentList.forEach(function(assignmment) {
-    //     names.push(assignmment.title);
-    //   });
-    //   var index = readlineSync.keyInSelect(names.slice(0, 9), "Which assignment?");
-    //   console.log(assignmentList[index]);
-    // });
   }
 });
