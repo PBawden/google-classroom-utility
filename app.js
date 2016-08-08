@@ -25,7 +25,7 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
     var index = readlineSync.keyInSelect(names, "Which class?");
     var selected = classList[index];
     var delim = selected.name.split(' ');
-    var collectionName = delim.join().slice(0, 5);
+    var collectionName = delim.join().slice(0, 7);
     var mainMenu = ['Update Student List', 'Initial Assignment Upload', 'Update Existing Assignment'];
     var main = readlineSync.keyInSelect(mainMenu, 'Which action would you like to take?');
     /* selection 0 is Update Student List */
@@ -75,13 +75,18 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
               console.log(err);
             } else {
               var submissions = res.body;
+              var counter = submissions.length;
               var tek = readlineSync.question("Which TEK should this be coded as?");
               submissions.forEach(function(submission) {
                 utils.initialUpload(submission, tek, download.title, collectionName, function(err) {
                   if (err) {
                     console.log(err);
                   } else {
+                    counter --;
                     console.log("Inserted grade for " + submission.userId);
+                    if (counter === 0) {
+                      process.exit();
+                    }
                   }
                 });
               });
@@ -109,12 +114,17 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
               console.log(err);
             } else {
               var submissions = res.body;
+              var counter = submissions.length;
               submissions.forEach(function(submission) {
                 utils.assignmentUpdate(submission, collectionName, function(err) {
                   if (err) {
                     console.log(err);
                   } else {
+                    counter --;
                     console.log("Updated grade for " + submission.userId);
+                    if (counter === 0) {
+                      process.exit();
+                    }
                   }
                 });
               });
