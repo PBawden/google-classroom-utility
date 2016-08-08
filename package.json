@@ -28,5 +28,6 @@
     "readline-sync": "^1.4.4",
     "superagent": "^2.1.0",
     "urlencode": "^1.1.0"
-  }
+  },
+  "private": true
 }

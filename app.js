@@ -2,6 +2,8 @@ var request = require('superagent');
 var utils = require('./db/utils');
 var readlineSync = require('readline-sync');
 var urlencode = require('urlencode');
+console.log("Welcome to the Google Classroom utility.");
+console.log("After the class list loads, you will find options.");
 
 var url = "https://script.google.com/macros/s/AKfycbzGmvkUXGTvNK0ChTl9EMk9BenhwbtLHrjRjbaPauIW5CNblb0/exec";
 console.log("Loading class lists...");
@@ -22,6 +24,8 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
     });
     var index = readlineSync.keyInSelect(names, "Which class?");
     var selected = classList[index];
+    var delim = selected.name.split(' ');
+    var collectionName = delim.join().slice(0, 5);
     var mainMenu = ['Update Student List', 'Initial Assignment Upload', 'Update Existing Assignment'];
     var main = readlineSync.keyInSelect(mainMenu, 'Which action would you like to take?');
     /* selection 0 is Update Student List */
@@ -37,10 +41,10 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
           }
         } else {
           var students = res.body;
-          utils.findNewStudents('algebra2', students, function(arr) {
+          utils.findNewStudents(collectionName, students, function(arr) {
             if(arr.length>0) {
               // do something to insert new students
-              utils.insertNewStudents(arr, 'algebra2', function() {
+              utils.insertNewStudents(arr, collectionName, function() {
                 console.log("Successfully inserted " + arr.length + " new students.");
                 process.exit();
               });
@@ -73,7 +77,7 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
               var submissions = res.body;
               var tek = readlineSync.question("Which TEK should this be coded as?");
               submissions.forEach(function(submission) {
-                utils.initialUpload(submission, tek, download.title, 'algebra2', function(err) {
+                utils.initialUpload(submission, tek, download.title, collectionName, function(err) {
                   if (err) {
                     console.log(err);
                   } else {
@@ -106,7 +110,7 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
             } else {
               var submissions = res.body;
               submissions.forEach(function(submission) {
-                utils.assignmentUpdate(submission, 'algebra2', function(err) {
+                utils.assignmentUpdate(submission, collectionName, function(err) {
                   if (err) {
                     console.log(err);
                   } else {
