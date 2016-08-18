@@ -1,3 +1,5 @@
+var studentData = require('../studentData');
+
 var MongoClient = require("mongodb").MongoClient;
 var config = require('./config');
 
@@ -99,6 +101,31 @@ module.exports = {
         });
       }
     });
+  },
+  appendData: function(collection, callback) {
+    studentData.forEach(function(student) {
+      MongoClient.connect(config.uri, function(err, db) {
+        if (err) {
+          console.log(err);
+        } else {
+          db.collection(collection).update(
+            {email: student.email},
+            {$set: {
+              skywardFull: student.skywardFull,
+              skywardFirst: student.skywardFirst,
+              skywardLast: student.skywardLast,
+              internalId: student.internalId,
+              cohort: student.cohort
+            }}, function(err) {
+              if (err) {
+                console.log(err);
+              } else {
+                callback();
+              }
+            }
+          );
+        }
+      });
+    });
   }
-
 };

@@ -26,7 +26,7 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
     var selected = classList[index];
     var delim = selected.name.split(' ');
     var collectionName = delim.join().slice(0, 7);
-    var mainMenu = ['Update Student List', 'Initial Assignment Upload', 'Update Existing Assignment'];
+    var mainMenu = ['Update Student List', 'Initial Assignment Upload', 'Update Existing Assignment', 'Append Additional Data'];
     var main = readlineSync.keyInSelect(mainMenu, 'Which action would you like to take?');
     /* selection 0 is Update Student List */
     if (main === 0) {
@@ -131,6 +131,15 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
             }
           });
         }
+      });
+    } else if (main === 3) {
+      console.log("About to append internal Skyward IDs for each student.");
+      console.log("Please make sure there is a file named studentData.json");
+      console.log("in this project's directory.  The required fields are: ");
+      console.log('"email", "internalId", "skywardFirst", "skywardLast", "skywardFull" and "cohort"');
+      utils.appendData(collectionName, function() {
+        console.log("Success!");
+        process.exit();
       });
     }
   }
