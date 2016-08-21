@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/wesbasinger/google-classroom-utility#readme",
   "dependencies": {
+    "fuzzy-matching": "^0.4.3",
     "mongodb": "^2.2.5",
     "readline-sync": "^1.4.4",
     "superagent": "^2.1.0",

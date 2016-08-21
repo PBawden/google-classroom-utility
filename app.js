@@ -1,5 +1,12 @@
+var fs = require('fs');
+var path = require('path');
+
 var request = require('superagent');
+
 var utils = require('./db/utils');
+var keys = require('./db/keys');
+
+var FuzzyMatching = require('fuzzy-matching');
 var readlineSync = require('readline-sync');
 var urlencode = require('urlencode');
 console.log("Welcome to the Google Classroom utility.");
@@ -24,9 +31,19 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
     });
     var index = readlineSync.keyInSelect(names, "Which class?");
     var selected = classList[index];
-    var delim = selected.name.split(' ');
-    var collectionName = delim.join().slice(0, 7);
-    var mainMenu = ['Update Student List', 'Initial Assignment Upload', 'Update Existing Assignment', 'Append Additional Data'];
+    var fm = new FuzzyMatching([selected.name]);
+    var currKey = keys.filter(function(obj) {
+      var match = fm.get(obj.fullName);
+      return match.distance >= 0.5;
+    });
+    var collectionName = currKey[0].collection;
+    var mainMenu = [
+      'Update Student List',
+      'Initial Assignment Upload',
+      'Update Existing Assignment',
+      'Append Additional Data',
+      'Parse CSV File'
+    ];
     var main = readlineSync.keyInSelect(mainMenu, 'Which action would you like to take?');
     /* selection 0 is Update Student List */
     if (main === 0) {
@@ -141,6 +158,21 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
         console.log("Success!");
         process.exit();
       });
+    } else if (main === 4) {
+      console.log("Finding files in download folder with extension csv");
+      fs.readdir('/Users/teacher/Downloads', function(err, contents) {
+        if (err) {
+          console.log(err);
+        } else {
+          var csvFiles = [];
+          contents.forEach(function(content) {
+            if (path.extname(content) === ".csv") {
+              csvFiles.push(content);
+            }
+          });
+          var pickCSV = readlineSync.keyInSelect(csvFiles, 'Which file would you like to parse?');
+        }
+      })
     }
   }
 });
