@@ -4,6 +4,7 @@ var path = require('path');
 var request = require('superagent');
 
 var utils = require('./db/utils');
+var parse = require('./parse');
 var keys = require('./db/keys');
 
 var FuzzyMatching = require('fuzzy-matching');
@@ -171,6 +172,10 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
             }
           });
           var pickCSV = readlineSync.keyInSelect(csvFiles, 'Which file would you like to parse?');
+          var fullPath = '/Users/teacher/Downloads/' + csvFiles[pickCSV];
+          parse.extractHeader(fullPath, function(_event) {
+            console.log(_event);
+          })
         }
       })
     }
