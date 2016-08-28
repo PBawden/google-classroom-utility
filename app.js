@@ -171,6 +171,10 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
               csvFiles.push(content);
             }
           });
+          if (csvFiles.length < 1) {
+            console.log("No CSV files found to parse!");
+            process.exit();
+          }
           var pickCSV = readlineSync.keyInSelect(csvFiles, 'Which file would you like to parse?');
           var fullPath = '/Users/teacher/Downloads/' + csvFiles[pickCSV];
           parse.extractHeader(fullPath, function(_event) {
@@ -181,25 +185,35 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
               });
               var pickAssignment = readlineSync.keyInSelect(assignmentNames, 'Which assignment would you like to use?');
               var picked = docs[pickAssignment];
+              var fm = new FuzzyMatching([picked.title]);
+              var match = fm.get(_event.title);
+              if (match.distance < 0.6) {
+                console.log("The titles do not seem to match...");
+                console.log("The parsed title from the CSV file is " + _event.title + ".");
+                console.log("The title from the database is " + match.value);
+                if (readlineSync.keyInYN('Do you want to abort?')) {
+                  process.exit();
+                }
+              }
+
               var newFileLines = _event.header;
               utils.getGrades(collectionName, picked.courseWorkId, _event.cohort, function(docs) {
                 docs.forEach(function(doc) {
-                  var nm = doc.skywardFull.split(",");
-                  var last = nm[0];
-                  var first = nm[1].slice(0, -2);
                   newFileLines.push(
-                  `"${doc.internalId}", "${first} ${last}", "", "${doc.grade || 0}", "", "", "", ""`);
+                  `"${doc.internalId}","${doc.skywardFirst} ${doc.skywardLast}","","${doc.grade || 0}","","","",""`);
                 });
                 var ready = "";
                 newFileLines.forEach(function(line) {
                   ready += line;
                   ready += '\n';
                 });
-                fs.writeFile('test.csv', ready, function(err) {
+                var newFileName = _event.title + "_" + _event.cohort + ".csv";
+                fs.writeFile(newFileName, ready, function(err) {
                   if (err) {
                     console.log(err);
                   } else {
-                    console.log("done!");
+                    console.log("Done! REMEMBER: max points must match!!!");
+                    fs.unlinkSync(fullPath);
                     process.exit();
                   }
                 });

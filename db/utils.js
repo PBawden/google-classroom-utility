@@ -111,7 +111,8 @@ module.exports = {
           db.collection(collection).update(
             {email: student.email},
             {$set: {
-              skywardFull: student.skywardFull,
+              skywardFirst: student.skywardFirst,
+              skywardLast: student.skywardLast,
               internalId: student.internalId,
               cohort: student.cohort,
               studentId: student.studentId
@@ -151,7 +152,7 @@ module.exports = {
       if (err) {
         console.log(err);
       } else {
-        db.collection(collection).aggregate([{$match:{cohort: cohort}}, {$unwind:"$work"}, {$match:{"work.courseWorkId":courseWorkId}}, {$project:{_id:0, "internalId":1, skywardFull:1, "grade":"$work.assignedGrade"}},{$sort:{skywardFull:1}}]).toArray(function(err, docs) {
+        db.collection(collection).aggregate([{$match:{cohort: cohort}}, {$unwind:"$work"}, {$match:{"work.courseWorkId":courseWorkId}}, {$project:{_id:0, "internalId":1, skywardLast:1, skywardFirst:1, "grade":"$work.assignedGrade"}},{$sort:{skywardLast:1}}]).toArray(function(err, docs) {
           if (err) {
             console.log(err);
           } else {
