@@ -5,7 +5,6 @@
   "main": "app.js",
   "scripts": {
     "test": "mocha",
-    "prestart": "jshint app.js ./db/*.js",
     "start": "node app.js"
   },
   "repository": {

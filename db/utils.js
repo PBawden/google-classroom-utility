@@ -151,7 +151,7 @@ module.exports = {
       if (err) {
         console.log(err);
       } else {
-        db.collection(collection).aggregate([{$match:{cohort: cohort}}, {$unwind:"$work"}, {$match:{"work.courseWorkId":courseWorkId}}, {$project:{_id:0, "internalId":1, skywardFull:1, "grade":"$work.assignedGrade"}}]).toArray(function(err, docs) {
+        db.collection(collection).aggregate([{$match:{cohort: cohort}}, {$unwind:"$work"}, {$match:{"work.courseWorkId":courseWorkId}}, {$project:{_id:0, "internalId":1, skywardFull:1, "grade":"$work.assignedGrade"}},{$sort:{skywardFull:1}}]).toArray(function(err, docs) {
           if (err) {
             console.log(err);
           } else {

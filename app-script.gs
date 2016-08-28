@@ -1,5 +1,3 @@
-// This is the web app that runs on Google Apps Script
-
 Object.assign = function(target) {
   'use strict';
   if (target == null) {
@@ -54,11 +52,10 @@ return rtnClasses;
 function getStudents(courseId) {
 var optionalArgs = {
   pageSize: 10
-}
+};
 var studentObjs = [];
-for (var i=0; i<8; i++) {
+do {
   var response = Classroom.Courses.Students.list(courseId, optionalArgs);
-  optionalArgs.pageToken = response.nextPageToken;
   var students = response.students;
   students.forEach(function(student) {
     var blank = {};
@@ -68,10 +65,14 @@ for (var i=0; i<8; i++) {
     blank.fullName = student.profile.name.fullName;
     blank.userId = student.userId;
     studentObjs.push(blank);
-  })
+  });
+  optionalArgs.pageToken = response.nextPageToken;
 }
-return (studentObjs);
+while (response.nextPageToken);
+return studentObjs;
 }
+
+
 
 function getAssignments(courseid) {
 var optionalArgs = {
@@ -99,9 +100,8 @@ var optionalArgs = {
   pageSize: 10
 }
 var submissionObjs = [];
-for (var i=0; i<8; i++) {
+do {
   var response = Classroom.Courses.CourseWork.StudentSubmissions.list(courseId,courseWorkId , optionalArgs);
-  optionalArgs.pageToken = response.nextPageToken;
   var submissions = response.studentSubmissions;
   submissions.forEach(function(submission) {
     var blank = {};
@@ -111,7 +111,9 @@ for (var i=0; i<8; i++) {
     blank.userId = submission.userId;
     blank.assignedGrade = submission.assignedGrade;
     submissionObjs.push(blank);
-  })
+  });
+  optionalArgs.pageToken = response.nextPageToken;
 }
+while(response.nextPageToken);
 return submissionObjs;
 }

@@ -181,8 +181,28 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
               });
               var pickAssignment = readlineSync.keyInSelect(assignmentNames, 'Which assignment would you like to use?');
               var picked = docs[pickAssignment];
+              var newFileLines = _event.header;
               utils.getGrades(collectionName, picked.courseWorkId, _event.cohort, function(docs) {
-                // start here
+                docs.forEach(function(doc) {
+                  var nm = doc.skywardFull.split(",");
+                  var last = nm[0];
+                  var first = nm[1].slice(0, -2);
+                  newFileLines.push(
+                  `"${doc.internalId}", "${first} ${last}", "", "${doc.grade || 0}", "", "", "", ""`);
+                });
+                var ready = "";
+                newFileLines.forEach(function(line) {
+                  ready += line;
+                  ready += '\n';
+                });
+                fs.writeFile('test.csv', ready, function(err) {
+                  if (err) {
+                    console.log(err);
+                  } else {
+                    console.log("done!");
+                    process.exit();
+                  }
+                });
               });
             });
           });
