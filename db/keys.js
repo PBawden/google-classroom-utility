@@ -9,6 +9,6 @@ var keys = [
     collection : "Engineering",
     fullName : "Engineering"
   }
-]
+];
 
 module.exports = keys;

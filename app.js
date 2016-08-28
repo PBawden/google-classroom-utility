@@ -174,10 +174,20 @@ request.get(url + "?method=getClasses&" + partial).end(function(err, res) {
           var pickCSV = readlineSync.keyInSelect(csvFiles, 'Which file would you like to parse?');
           var fullPath = '/Users/teacher/Downloads/' + csvFiles[pickCSV];
           parse.extractHeader(fullPath, function(_event) {
-            console.log(_event);
-          })
+            utils.getAssignments(collectionName, function(docs) {
+              var assignmentNames = [];
+              docs.forEach(function(doc) {
+                assignmentNames.push(doc.title);
+              });
+              var pickAssignment = readlineSync.keyInSelect(assignmentNames, 'Which assignment would you like to use?');
+              var picked = docs[pickAssignment];
+              utils.getGrades(collectionName, picked.courseWorkId, _event.cohort, function(docs) {
+                // start here
+              });
+            });
+          });
         }
-      })
+      });
     }
   }
 });

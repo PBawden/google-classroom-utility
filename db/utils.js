@@ -112,10 +112,9 @@ module.exports = {
             {email: student.email},
             {$set: {
               skywardFull: student.skywardFull,
-              skywardFirst: student.skywardFirst,
-              skywardLast: student.skywardLast,
               internalId: student.internalId,
-              cohort: student.cohort
+              cohort: student.cohort,
+              studentId: student.studentId
             }}, function(err) {
               if (err) {
                 console.log(err);
@@ -126,6 +125,40 @@ module.exports = {
           );
         }
       });
+    });
+  },
+  getAssignments: function(collection, callback) {
+    MongoClient.connect(config.uri, function(err, db) {
+      if (err) {
+        console.log(err);
+      } else {
+        db.collection(collection).aggregate({$unwind:"$work"}, {$project:{_id:0, "courseWorkId":"$work.courseWorkId", title:"$work.title"}}, { $group: { _id: '$courseWorkId', data: { $addToSet: '$title' } } }).toArray(function(err, docs) {
+          var small = {};
+          var smallList = [];
+          docs.forEach(function(doc) {
+            if (!small[doc.courseWorkId]) {
+              small[doc.courseWorkId] = doc;
+              smallList.push(doc);
+            }
+          });
+          callback(smallList);
+        });
+      }
+    });
+  },
+  getGrades: function(collection, courseWorkId, cohort, callback) {
+    MongoClient.connect(config.uri, function(err, db) {
+      if (err) {
+        console.log(err);
+      } else {
+        db.collection(collection).aggregate([{$match:{cohort: cohort}}, {$unwind:"$work"}, {$match:{"work.courseWorkId":courseWorkId}}, {$project:{_id:0, "internalId":1, skywardFull:1, "grade":"$work.assignedGrade"}}]).toArray(function(err, docs) {
+          if (err) {
+            console.log(err);
+          } else {
+            callback(docs);
+          }
+        });
+      }
     });
   }
 };
