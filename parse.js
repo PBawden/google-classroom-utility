@@ -16,7 +16,7 @@ module.exports = {
         var gradebookRow = delim[0].split(',');
         var info = gradebookRow[1].split(' ');
         _event.abbrev = info[0].slice(1);
-        _event.cohort = delim[0].slice(23, 24);
+        _event.cohort = csvFile.slice(-5).charAt(0);
         _event.grade = delim[0].slice(18, 20)
 
         var eventRow = delim[2].split(",");
